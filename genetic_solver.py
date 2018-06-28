@@ -6,7 +6,7 @@ class GeneticSolver:
     population = set()
     bssf = None
     bssf_count = 0
-    max_cycles = 500
+    max_cycles = 5000
     stop = False
 
 
@@ -37,9 +37,17 @@ class GeneticSolver:
         return sum / float(self.population_size)
 
     def get_and_remove_random_entity_from_population(self):
-        rand_index = random.randint(0, self.population_size-1)
+        # Careful: Sometimes the size of the population will be 999... not 1000
+        rand_index = random.randint(0, self.population_size-2)
         random_entity = list(self.population)[rand_index]
+        
+        print("random index: ", str(rand_index))
+        print("random_entity: ", random_entity) 
+
         self.population.remove(random_entity)
+
+        print("population < 1000: ", len(self.population))
+
         return random_entity
 
     def create_child(self, parent1, parent2):
@@ -90,6 +98,18 @@ class GeneticSolver:
             self.bssf = tmp_best_sequence
             self.bssf_count = 0
             print("Updated BSSF: ", self.bssf)
+    
+    def validate_population(self):
+        valid_pop = False
+        
+        while not valid_pop:
+            try:
+                self.population.remove(None)
+            except KeyError:
+                pass
+            self.generate_random_population()
+            
+            valid_pop = False if (None in self.population) else True 
 
     def run(self):
         """ Navigate the solution space using:
@@ -129,11 +149,14 @@ class GeneticSolver:
             self.update_bssf()
             self.update_stopping_criteria()
 
-            print("Mean Fitness: {f}".format(f=str(self.get_population_mean_fitness())))
+            # print("Mean Fitness: {f}".format(f=str(self.get_population_mean_fitness())))
+            print("Population Size:", str(len(self.population)))
+
+            self.validate_population()
 
         if self.stop:
-            print("Best solution: ")
-            print(self.bssf)
+            print("Best solution: ", self.bssf)
+            print("Best Fitness: ", str(self.table.get_fitness(self.bssf)))
         
 
 
