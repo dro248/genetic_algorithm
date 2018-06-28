@@ -2,7 +2,7 @@ from table import Table
 import random
 
 class GeneticSolver:
-    population_size = 1000
+    population_size = 5000
     population = set()
     bssf = None
     bssf_count = 0
@@ -40,14 +40,7 @@ class GeneticSolver:
         # Careful: Sometimes the size of the population will be 999... not 1000
         rand_index = random.randint(0, self.population_size-2)
         random_entity = list(self.population)[rand_index]
-        
-        print("random index: ", str(rand_index))
-        print("random_entity: ", random_entity) 
-
         self.population.remove(random_entity)
-
-        print("population < 1000: ", len(self.population))
-
         return random_entity
 
     def create_child(self, parent1, parent2):
@@ -149,8 +142,8 @@ class GeneticSolver:
             self.update_bssf()
             self.update_stopping_criteria()
 
-            # print("Mean Fitness: {f}".format(f=str(self.get_population_mean_fitness())))
-            print("Population Size:", str(len(self.population)))
+            print("Mean Fitness: {f}".format(f=str(self.get_population_mean_fitness())))
+            # print("Population Size:", str(len(self.population)))
 
             self.validate_population()
 
