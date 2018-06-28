@@ -32,8 +32,6 @@ class Table:
         for index, element in enumerate(str(dna_sequence)):
             if element == '1':
                 sum += self.table[index]['size']
-            
-        print("sum:", sum)
         
         # calculate fitness
         if sum <= self.knapsack_size:
@@ -45,3 +43,6 @@ class Table:
             overflow_punishment = NEGATIVE_MULTIPLIER * overflow
 
             return (self.knapsack_size - overflow_punishment) / float(self.knapsack_size), valid_value
+
+    def get_string_length(self):
+        return len(self.table)
