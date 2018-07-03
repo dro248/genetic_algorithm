@@ -2,25 +2,23 @@ from table import Table
 import random
 
 class GeneticSolver:
-    population_size = 5000
+    population_size = 50000
     population = set()
-    bssf = None
+    bssf = "0" * 26
     bssf_count = 0
-    max_cycles = 5000
+    max_cycles = 1000
     stop = False
 
 
     def __init__(self, table):
         self.table = table
         self.generate_random_population()
-        print("DONE")
+        print("Random Population Generated!")
+        print()
     
     def generate_random_population(self):
         while len(self.population) < self.population_size:
            self.population.add(self.generate_random_dna_sequence())
-        
-        # Set bssf to be some random value
-        self.bssf = list(self.population)[0]
     
     def generate_random_dna_sequence(self):
         dna_length = len(self.table.table)
@@ -68,6 +66,12 @@ class GeneticSolver:
                 seq_list[index] = '1' if (letter is '0') else '0'
         
         mutated_sequence = "".join(seq_list)
+
+        if self.table.get_fitness(mutated_sequence)[1] is True:
+            print("Mutated sequence: ", mutated_sequence)
+            print("Mutated seq is valid: ", self.table.get_fitness(mutated_sequence)[1])
+            print("Mutated seq fitness: ", self.table.get_fitness(mutated_sequence)[0])
+
         return mutated_sequence
     
     def update_stopping_criteria(self):
@@ -76,7 +80,7 @@ class GeneticSolver:
             self.stop = True
 
     def update_bssf(self):
-        tmp_best_sequence = list(self.population)[0]
+        tmp_best_sequence = self.bssf
         tmp_best_fitness, tmp_valid = self.table.get_fitness(tmp_best_sequence)
 
         # Find the best solution
@@ -85,12 +89,12 @@ class GeneticSolver:
             if item_valid and (item_fitness > tmp_best_fitness):
                 tmp_best_sequence = item_sequence
                 tmp_best_fitness = item_fitness
-        
+
         # if tmp_best_sequence is different than self.bssf, reset self.bssf_count
         if (tmp_best_sequence != self.bssf) and tmp_valid:
             self.bssf = tmp_best_sequence
             self.bssf_count = 0
-            print("Updated BSSF: ", self.bssf)
+            print("Updated BSSF: ", self.bssf, str(self.table.get_fitness(self.bssf)[0]))
     
     def validate_population(self):
         valid_pop = False
@@ -113,6 +117,7 @@ class GeneticSolver:
         """
         
         while not self.stop:
+            # print(self.table.get_fitness(self.bssf))
 
             # Get 2 parents
             parent1 = self.get_and_remove_random_entity_from_population()
@@ -142,8 +147,13 @@ class GeneticSolver:
             self.update_bssf()
             self.update_stopping_criteria()
 
-            print("Mean Fitness: {f}".format(f=str(self.get_population_mean_fitness())))
+            # print("Mean Fitness: {f}".format(f=str(self.get_population_mean_fitness())))
+            print("Best solution: ", self.bssf)
+            print("Best Fitness: ", str(self.table.get_fitness(self.bssf)))
+            print('+'*30)
             # print("Population Size:", str(len(self.population)))
+
+            # print("BSSF is valid: ", (self.table.get_fitness(self.bssf)[1]))
 
             self.validate_population()
 
